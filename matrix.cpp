@@ -202,6 +202,7 @@ Matrix& Matrix::operator=(const Matrix& A) {
     data[j].resize(nrows);
     data[j] = A.data[j];
   }
+  return *this;
 }
 
 // dimension accessor routines
