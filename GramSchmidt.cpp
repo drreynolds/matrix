@@ -13,7 +13,7 @@ using namespace std;
 int GramSchmidt(Matrix& X) {
 
   // check that there is work to do
-  if (X.Cols() < 1)  return 0;
+  if (X.Columns() < 1)  return 0;
 
   // get entry magnitude (for linear dependence check)
   double Xmax = InfNorm(X);
@@ -27,7 +27,7 @@ int GramSchmidt(Matrix& X) {
   X[0] *= 1.0/colnorm;
 
   // iterate over remaining vectors, performing Gram-Schmidt process
-  for (int i=1; i<X.Cols(); i++) {
+  for (int i=1; i<X.Columns(); i++) {
     
     // subtract off portions in directions of existing basis vectors
     for (int j=0; j<i; j++)

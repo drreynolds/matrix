@@ -29,10 +29,6 @@ int main(int argc, char* argv[]) {
   vector<double> dat2 = {0.1, 0.2, 0.3, 0.4, 0.5};
   Matrix b2(5, 1, dat2);
 
-  // create a row vec with an existing valarray
-  valarray<double> dat3(dat1, 5);
-  Matrix b3(1, 5, dat3);
-
   // create a row vector using linspace
   Matrix c = Linspace(1.0, 5.0, 1, 5);
 
@@ -46,15 +42,13 @@ int main(int argc, char* argv[]) {
   b.Write();
   printf("writing (column) array of 0.1,0.2,0.3,0.4,0.5:\n");
   b2.Write();
-  printf("writing array of 0.1,0.2,0.3,0.4,0.5:\n");
-  b3.Write();
   printf("writing array of 1,2,3,4,5:\n");
   c.Write();
   printf("writing a column vector of 7 zeros:\n");
   h.Write();
 
   // verify that b has size 5
-  if (b.Rows()*b.Cols() != 5) 
+  if (b.Rows()*b.Columns() != 5) 
     printf("error: incorrect matrix size\n");
   if (b.Size() != 5) 
     printf("error: incorrect matrix size\n");
@@ -66,47 +60,47 @@ int main(int argc, char* argv[]) {
   a[3][0] = 25.0;
   a[4][0] = 30.0;
   printf("entries of a, one at a time: should give 10, 15, 20, 25, 30\n");
-  for (size_t i=0; i<a.Cols(); i++) 
+  for (size_t i=0; i<a.Columns(); i++) 
     printf("  %g\n",a(i));
   
   // write the values to file
   printf("writing this same vector to the file 'a_data':\n");
   a.Write("a_data");
 
-  // Testing Read() constructor
+  // Testing MatrixRead() constructor
   double tol = 1.0e-15;
   Matrix read_test1a = Random(3,4);
   read_test1a.Write("tmp.txt");
-  Matrix read_test1b = Read("tmp.txt");
+  Matrix read_test1b = MatrixRead("tmp.txt");
   Matrix read_test1_error = read_test1a-read_test1b;
   if (InfNorm(read_test1_error) < tol)
-    cout << "Read() test 1 passed\n";
+    cout << "MatrixRead() test 1 passed\n";
   else {
-    cout << "Read() test 1 failed, ||error|| = " << InfNorm(read_test1_error) << endl;
+    cout << "MatrixRead() test 1 failed, ||error|| = " << InfNorm(read_test1_error) << endl;
     cout << "  read_test1a = \n" << read_test1a;
     cout << "  read_test1b = \n" << read_test1b;
   }
 
   Matrix read_test2a = Random(12,1);
   read_test2a.Write("tmp.txt");
-  Matrix read_test2b = Read("tmp.txt");
+  Matrix read_test2b = MatrixRead("tmp.txt");
   Matrix read_test2_error = read_test2a-read_test2b;
   if (InfNorm(read_test2_error) < tol)
-    cout << "Read() test 2 passed\n";
+    cout << "MatrixRead() test 2 passed\n";
   else {
-    cout << "Read() test 2 failed, ||error|| = " << InfNorm(read_test2_error) << endl;
+    cout << "MatrixRead() test 2 failed, ||error|| = " << InfNorm(read_test2_error) << endl;
     cout << "  read_test2a = \n" << read_test2a;
     cout << "  read_test2b = \n" << read_test2b;
   }
 
   Matrix read_test3a = Random(1,7);
   read_test3a.Write("tmp.txt");
-  Matrix read_test3b = Read("tmp.txt");
+  Matrix read_test3b = MatrixRead("tmp.txt");
   Matrix read_test3_error = read_test3a-read_test3b;
   if (InfNorm(read_test3_error) < tol)
-    cout << "Read() test 3 passed\n";
+    cout << "MatrixRead() test 3 passed\n";
   else {
-    cout << "Read() test 3 failed, ||error|| = " << InfNorm(read_test3_error) << endl;
+    cout << "MatrixRead() test 3 failed, ||error|| = " << InfNorm(read_test3_error) << endl;
     cout << "  read_test3a = \n" << read_test3a;
     cout << "  read_test3b = \n" << read_test3b;
   }
@@ -127,7 +121,7 @@ int main(int argc, char* argv[]) {
   a(4) = 30.0;  // reset to original
 
   // Testing submatrix copy constructor
-  Matrix B2 = a(0,0,1,3);
+  Matrix B2 = a.Extract(0,0,1,3);
   cout << "Matrix B2 = a(0,0,1,3) uses submatrix copy constructor" << endl;
   B2.Write();
   // update entries of B2
@@ -135,7 +129,7 @@ int main(int argc, char* argv[]) {
   B2(1) = 3.0;
   B2(2) = 2.0;
   // copy B2 back into a using submatrix copy
-  a.Copy(B2,0,0,1,3);
+  a.Insert(B2,0,0,1,3);
   cout << "submatrix copy into a, should have entries 10 4 3 2 30" << endl;
   a.Write();
   a(1) = 15.0;  // reset to original
@@ -160,33 +154,33 @@ int main(int argc, char* argv[]) {
   c.Write();
 
   printf("Testing vector subtract, should be 8, 12, 16, 20, 24\n");
-  a.Sub(c);
+  a.Subtract(c);
   a.Write();
 
   printf("Testing scalar subtract, should be 0, 1, 2, 3, 4\n");
-  c.Sub(2.0);
+  c.Subtract(2.0);
   c.Write();
 
-  printf("Testing vector const, should all be -1\n");
-  b.Const(-1.0);
+  printf("Testing vector constant, should all be -1\n");
+  b.Constant(-1.0);
   b.Write();
 
   printf("Testing vector copy, should be 0, 1, 2, 3, 4\n");
   a.Copy(c);
   a.Write();
 
-  printf("Testing scalar mul, should be 0, 5, 10, 15, 20\n");
-  c.Mul(5.0);
+  printf("Testing scalar multiply, should be 0, 5, 10, 15, 20\n");
+  c.Multiply(5.0);
   c.Write();
 
-  printf("Testing vector mul, should be 0, -1, -2, -3, -4\n");
-  b.Mul(a);
+  printf("Testing vector multiply, should be 0, -1, -2, -3, -4\n");
+  b.Multiply(a);
   b.Write();
 
-  printf("Testing vector div, should be 0, -2.5, -3.3333, -3.75, -4\n");
+  printf("Testing vector divide, should be 0, -2.5, -3.3333, -3.75, -4\n");
   Matrix j(c);
   b.Add(-1.0);
-  j.Div(b);
+  j.Divide(b);
   b.Add(1.0);
   j.Write();
 
@@ -364,13 +358,13 @@ int main(int argc, char* argv[]) {
   Matrix b_ = A_*xtrue_;
   b_.Write();
 
-  printf("Testing BackSub with provided solution array:\n");
+  printf("Testing BackSubstitution with provided solution array:\n");
   Matrix x_(6,1);
-  BackSub(A_, x_, b_);
+  BackSubstitution(A_, x_, b_);
   //x_.Write();
   cout << "  ||x - xtrue|| = " << InfNorm(x_ - xtrue_) << endl;
 
-  printf("Testing FwdSub:\n");
+  printf("Testing ForwardSubstitution:\n");
   A_ = Eye(6);
   A_(3,0) = 2.0;
   A_(2,1) = -1.0;
@@ -379,14 +373,14 @@ int main(int argc, char* argv[]) {
   A_(5,4) = 1.0;
   b_ = A_*xtrue_;
   x_ = 0.0;
-  FwdSub(A_, x_, b_);
+  ForwardSubstitution(A_, x_, b_);
   cout << "  ||x - xtrue|| = " << InfNorm(x_ - xtrue_) << endl;
 
   printf("Testing general solver with vector rhs & solution:\n");
   Matrix C_ = 100.0*Eye(9) + Random(9,9);
   Matrix z_ = Logspace(-4.0, 4.0, 9, 1);
   Matrix f_ = C_*z_;
-  Matrix g_ = Solve(C_, f_);
+  Matrix g_ = LinearSolve(C_, f_);
   cout << "  ||x - xtrue|| = " << InfNorm(g_ - z_) << endl;
 
   printf("Testing subarray copy, should be: \n");
@@ -397,19 +391,19 @@ int main(int argc, char* argv[]) {
   printf(" Actually is:\n");
   Matrix z2_ = Logspace(-2.0, 1.0, 4, 1);
   Matrix B_(4,4);
-  B_.Copy(z2_,0,3,0,0);
+  B_.Insert(z2_,0,3,0,0);
   z2_ *= 2.0;
-  B_.Copy(z2_,0,3,1,1);
+  B_.Insert(z2_,0,3,1,1);
   z2_ *= 2.0;
-  B_.Copy(z2_,0,3,2,2);
+  B_.Insert(z2_,0,3,2,2);
   z2_ *= 2.0;
-  B_.Copy(z2_,0,3,3,3);
+  B_.Insert(z2_,0,3,3,3);
   B_.Write();
 
   printf("Testing general solver with matrix rhs & solution:\n");
   Matrix E_ = 100.0*Eye(4) + Random(4,4);
   Matrix F_ = E_*B_;
-  Matrix X_ = Solve(E_, F_);
+  Matrix X_ = LinearSolve(E_, F_);
   cout << "  ||X - Xtrue|| = " << InfNorm(X_ - B_) << endl;
 
   printf("Testing matrix inverse:\n");
