@@ -177,6 +177,12 @@ std::vector<double> Random(size_t n);
 // output routines 
 std::ostream& operator<<(std::ostream& os, const std::vector<double>& v);
 
+// extract/insert routines for portions of vectors
+std::vector<double> VecExtract(std::vector<double>& x,       // y = x(is:ie)
+                               long int is, long int ie);
+int VecInsert(std::vector<double>& x, long int is,           // x(is:ie) = y
+              long int ie, std::vector<double>& y);
+
 // arithmetic operators for vector<double>
 std::vector<double>& operator+=(std::vector<double>& v, const double c);
 std::vector<double>& operator+=(std::vector<double>& v, const std::vector<double>& w);

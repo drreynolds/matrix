@@ -368,6 +368,14 @@ int main(int argc, char* argv[]) {
   cout << "  InfNorm(r): " << InfNorm(r) << endl;
   cout << "  Dot(p,q): " << Dot(p,q) << endl;
   cout << " Press [enter] to continue\n";  cin.get();
+  vector<double> psub = VecExtract(p, 2, -1);
+  cout << "  vector<double> psub = VecExtract(p, 2, -1)\n";
+  cout << "\n psub:\n" << psub;
+  cout << " Press [enter] to continue\n";  cin.get();
+  VecInsert(q, 1, -2, psub);
+  cout << "  VecInsert(q, 1, -2, psub);\n";
+  cout << "\n q:\n" << q;
+  cout << " Press [enter] to continue\n";  cin.get();
   Matrix F = Random(4,4);
   Matrix F2 = F;
   cout << "  Matrix F = Random(4,4);\n";

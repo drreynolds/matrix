@@ -53,7 +53,7 @@ Matrix::Matrix(size_t m, size_t n, double* vals) {
 }
 
 // constructor that copies input data (1D vector)
-Matrix::Matrix(size_t m, size_t n, std::vector<double> vals) {
+Matrix::Matrix(size_t m, size_t n, vector<double> vals) {
   if (m*n != vals.size())
     cerr << "Matrix constructor error: incompatible shape with vector length\n";
   nrows = m;
@@ -68,7 +68,7 @@ Matrix::Matrix(size_t m, size_t n, std::vector<double> vals) {
 }
 
 // constructor that copies input data (1D vector) into a column vector
-Matrix::Matrix(std::vector<double> vals) {
+Matrix::Matrix(vector<double> vals) {
   nrows = vals.size();
   ncols = 1;
   data.resize(1);
@@ -252,7 +252,7 @@ int Matrix::Write(const char *outfile) const {
 }
 
 // streaming output routine
-std::ostream& operator<<(std::ostream& os, const Matrix& A) {
+ostream& operator<<(ostream& os, const Matrix& A) {
   for(size_t i=0; i<A.Rows(); i++) {
     for(size_t j=0; j<A.Columns(); j++)
       os << "  " << A.data[j][i];
@@ -918,7 +918,7 @@ vector<double> MatVec(const Matrix& A, const vector<double>& v) {
   return res;
 }
 
-vector<double> operator*(const Matrix& A, const std::vector<double>& v) {
+vector<double> operator*(const Matrix& A, const vector<double>& v) {
   return MatVec(A,v);
 }
 
@@ -988,12 +988,86 @@ vector<double> Random(size_t n) {
 }
 
 // streaming output routine
-std::ostream& operator<<(std::ostream& os, const std::vector<double>& v)
+ostream& operator<<(ostream& os, const vector<double>& v)
 {
   for (size_t i=0; i<v.size(); i++)
     os << "  " << v[i];
   os << "\n";
   return os;
+}
+
+// extract routine for portions of vectors, y = x(is:ie)
+vector<double> VecExtract(vector<double>& x,
+                          long int is, long int ie) {
+
+  // update is,ie,js,je if any are negative
+  is = (is < 0) ? is+x.size() : is;
+  ie = (ie < 0) ? ie+x.size() : ie;
+
+  // check that requested subvector exists
+  if (is < 0 || is >= x.size()) {
+    cerr << "VecExtract error, requested submatrix does not exist\n";
+    cerr << "  illegal is = " << is << " (vector has " << x.size() << " entries)\n";
+  }
+  if (ie < 0 || ie >= x.size()) {
+    cerr << "VecExtract error, requested submatrix does not exist\n";
+    cerr << "  illegal ie = " << ie << " (matrix has " << x.size() << " entries)\n";
+  }
+  if (ie < is) {
+    cerr << "VecExtract error, requested submatrix does not exist\n";
+    cerr << "  upper index is below lower index: is = " << is << ", ie = " 
+	 << ie << endl;
+  }
+
+  // create new vector of desired size
+  vector<double> y(ie-is+1);
+
+  // copy requested data
+  for (size_t i=is; i<=ie; i++) 
+    y[i-is] = x[i];
+
+  // return object
+  return y;
+}
+
+// insert routine for portions of vectors, x(is:ie) = y
+int VecInsert(vector<double>& x, long int is,
+              long int ie, vector<double>& y) {
+
+  // update is,ie if any are negative
+  is = (is < 0) ? is+x.size() : is;
+  ie = (ie < 0) ? ie+x.size() : ie;
+
+  // check that array sizes match
+  if (y.size() != (ie-is+1)) {
+    cerr << "VecInsert error, size mismatch\n    supplied vector has " << y.size() 
+         << " entries, but requested subvector has " << ie-is+1 << " entries\n";
+    return 1;
+  }
+  // check for valid subvector
+  if (is < 0 || is >= x.size()) {
+    cerr << "VecInsert error, requested subvector does not exist\n";
+    cerr << "  illegal is = " << is << " (vector has " << x.size() << " entries)\n";
+    return 1;
+  }
+  if (ie < 0 || ie >= x.size()) {
+    cerr << "VecInsert error, requested subvector does not exist\n";
+    cerr << "  illegal ie = " << ie << " (vector has " << x.size() << " entries)\n";
+    return 1;
+  }
+  if (ie < is) {
+    cerr << "VecInsert error, requested submatrix does not exist\n";
+    cerr << "  upper index is below lower index: is = " << is << ", ie = " 
+	 << ie << endl;
+    return 1;
+  }
+  
+  // perform operation
+  for (size_t i=0; i<y.size(); i++)  
+    x[i+is] = y[i];
+  
+  // return success
+  return 0;
 }
 
 // arithmetic operators
