@@ -154,6 +154,9 @@ std::vector<double> operator*(const Matrix& A, const std::vector<double>& v);
 
 //--- supplementary vector<double> vector-arithmetic routines ---
 
+// output routine
+int VecWrite(const std::vector<double>&v, const char *outfile);
+
 // inner product between two vectors
 double Dot(const std::vector<double>& v1, const std::vector<double>& v2);
 

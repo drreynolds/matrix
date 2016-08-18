@@ -879,9 +879,35 @@ Matrix Inverse(const Matrix& A) {
 
 //--- supplementary matrix-vector arithmetic routines ---
 
+// write vector to a file
+int VecWrite(const vector<double>& v, const char *outfile) {
+
+  // return with failure if 'outfile' is empty
+  if (strlen(outfile) < 1) {
+    cerr << "WriteVec error, empty outfile\n";
+    return 1;
+  }
+
+  // open output file
+  FILE *fptr = NULL;
+  fptr = fopen(outfile, "w");
+  if (fptr == NULL) {
+    cerr << "WriteVec error, unable to open " << outfile << " for writing\n";
+    return 1;
+  }
+
+  // print data to file
+  for (size_t i=0; i<v.size(); i++)
+    fprintf(fptr, "  %.16g", v[i]);
+
+  // close output file and return
+  fclose(fptr);
+  return 0;
+}
+
 // standard matrix-vector product
 vector<double> MatVec(const Matrix& A, const vector<double>& v) {
-  vector<double> res(0.0, A.Rows());
+  vector<double> res(A.Rows(), 0.0);
   if (A.Columns() != v.size()) {
     cerr << "MatVec: incompatible matrix/vector sizes in A*v\n";
   } else {
