@@ -20,9 +20,9 @@
 // for accessing pi via M_PI
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
-#include <math.h>
+#include <cmath>
 #else
-#include <math.h>
+#include <cmath>
 #endif
 
 

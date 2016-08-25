@@ -477,7 +477,6 @@ int Matrix::Trans() {
 
   // perform operation in place if matrix is square
   if (nrows == ncols) {
-    double tmp;
     for (size_t i=0; i<nrows; i++)
       for (size_t j=0; j<i; j++)
 	std::swap( data[j][i], data[i][j] );
